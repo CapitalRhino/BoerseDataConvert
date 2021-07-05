@@ -5,4 +5,14 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Model\NewFile1.cs" />
+    <Compile Remove="Model\Tag.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Controller\NewFile1.txt" />
+    <None Remove="Model\NewFile1.txt" />
+  </ItemGroup>
+
 </Project>
