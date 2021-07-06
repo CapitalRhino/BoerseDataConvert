@@ -18,7 +18,7 @@ namespace BoerseDataConvert
                 {
                     string tag = ConvertTag(tagValue.Key);
                     CheckValues(tagValue.Key, tagValue.Value);
-                    xmlRecord += $"";
+                    xlmRecord += $"";
                 }
                 catch (Exception e)
                 {
@@ -26,6 +26,7 @@ namespace BoerseDataConvert
                     throw;
                 }
             }
+            return xlmRecord;
         }
         private string ConvertTag(string tag)
         {
@@ -35,9 +36,33 @@ namespace BoerseDataConvert
                     break;
             }
         }
-        private void CheckValues(string tag, string value)
+        static void CheckValues(string tag, string value)
         {
-            
+            switch (tag)
+            {
+                //case:
+            }
+        }
+        static void ChechValueRange(string rangeType, string value)
+        {
+            List<string> posibleValues = new List<string>();
+            switch (rangeType)
+            {
+                case "A01":
+                    posibleValues = new List<string>() { "J", "N" };                
+                    break;
+                case "001":
+                    posibleValues = new List<string>() { "WAR", "KO", "EXO","AZE","AKA","BSK","IND","Warrant", "Exotic products" };
+                    break;
+                case "002":
+                    posibleValues = new List<string>() { "BND", "BSK", "COM", "CUR", "FI", "FON" , "FUT", "IND", "KOB", "MUL" , "STO", "DER" , "ETC", "PRC" };
+                    break;
+                case "001":
+                    posibleValues = new List<string>() { "J", "N" };
+                    break;
+
+            }
+            if (!posibleValues.Contains(value)) throw new ArgumentException("Invalid value!");
         }
     }
 }
