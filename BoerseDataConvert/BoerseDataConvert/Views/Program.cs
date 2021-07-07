@@ -15,19 +15,22 @@ namespace BoerseDataConvert
             // -d directory or --dir directory
             // -o directory or --output direcory
             // -h - help
-            string s = "900#01|204#J|008#HSH Nordbank AG|205#150215|206#111138|460#HSH Nordbank|207#HSH Nordbank AG#Gerhart-Hauptmann-Platz 50#20095 Hamburg#Deutschland|208#info@hsh-nordbank.com|209#040 33330|210#https://www.hsh-nordbank.de|451#TUKDD90GPC79G1KOE162";
-            string[] sr = s.Split("|").ToArray();
-            Dictionary<string, string> a = new Dictionary<string, string>();
-            foreach (var item in sr)
+            Console.WriteLine();
+            Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[2] { "subtype910.txt","subtype916.txt" });
+            RecordController a = new RecordController("");
+            while (true)
             {
-                string[] d = item.Split('#').ToArray();
-                a.Add(d[0], d[1]);
+                try
+                {
+                    Record record = reader.ReadLineRecord();
+                    Console.WriteLine(a.ConvertToXml(record));
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    break;
+                }
+                
             }
-            Record record = new Record();
-            record.TagsValues = a;
-            RecordController con = new RecordController("oo");
-            Console.WriteLine(con.ConvertToXml(record));
-            Console.WriteLine("Hello World!");
         }
     }
 }

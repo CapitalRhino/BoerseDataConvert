@@ -9,15 +9,19 @@ namespace BoerseDataConvert
 {
     public class RecordController
     {
-        private  int count;
-        private string fileName;
+        private  static int count;
+        private static string cur_fileName;
 
         public RecordController(string fileName)
         {
-            this.count = 1;
-            this.fileName = fileName;
+            count = 1;
+            cur_fileName = fileName;
         }
-
+        public static void NextFile(string fileName)
+        {
+            count = 1;
+            cur_fileName = fileName;
+        }
         public string ConvertToXml(Record record)
         {
             StringBuilder xmlRecord = new StringBuilder();
@@ -31,8 +35,7 @@ namespace BoerseDataConvert
                 }
                 catch (ArgumentException e)
                 {
-
-                    throw new ArgumentException(e.Message);
+                    Console.WriteLine(e.Message);
                 }
             }
             xmlRecord.Append($"</record>");
@@ -77,13 +80,14 @@ namespace BoerseDataConvert
                 {
                     string[] valueRange = tagLine[3].Split('#').ToArray();
                     bool countain = false;
+                    if (value == "") return tagname;
                     for (int i = 0; i < valueRange.Length; i++)
                     {
                         if (valueRange[i] == value)
                         {
                             countain = true;
                             break;
-                        }
+                        }                   
                     }
                     if(!countain) throw new ArgumentException("Value is not in value range!");
                 }      
