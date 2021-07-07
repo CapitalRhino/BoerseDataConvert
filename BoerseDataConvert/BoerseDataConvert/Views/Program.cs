@@ -34,18 +34,21 @@ namespace BoerseDataConvert
                 Help();
                 return;
             }
-            // Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[1] { "subtype910.txt" });
-            Reader reader = new Reader(@"D:\Code\ИТ Кариера\Стаж\задача\TestData-2021_07_02", new string[1] { "subtype910.txt" });
-            RecordController a = new RecordController("");
+             Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[1] { "subtype910.txt" });
+          //  Reader reader = new Reader(@"D:\Code\ИТ Кариера\Стаж\задача\TestData-2021_07_02", new string[1] { "subtype910.txt" });
+            RecordController a = new RecordController("subtype910.txt");
+            Writer writer = new Writer("subtype910.txt");
             while (true)
             {
                 try
                 {
                     Record record = reader.ReadLineRecord();
-                    Console.WriteLine(a.ConvertToXml(record));
+                    string s = a.ConvertToXml(record);
+                    writer.WriteRecord(s);
                 }
                 catch (IndexOutOfRangeException e)
                 {
+                    Writer.EndFile();
                     break;
                 }
                 
