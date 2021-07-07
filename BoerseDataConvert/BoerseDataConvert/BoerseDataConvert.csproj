@@ -15,4 +15,8 @@
     <None Remove="Model\NewFile1.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+  </ItemGroup>
+
 </Project>
