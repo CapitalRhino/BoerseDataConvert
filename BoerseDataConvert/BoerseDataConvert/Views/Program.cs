@@ -16,7 +16,7 @@ namespace BoerseDataConvert
             // -o directory or --output direcory
             // -h - help
             Console.WriteLine();
-            Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[2] { "subtype910.txt","subtype916.txt" });
+            Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[1] { "subtype910.txt" });
             RecordController a = new RecordController("");
             while (true)
             {
