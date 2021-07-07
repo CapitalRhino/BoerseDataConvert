@@ -25,7 +25,7 @@ namespace BoerseDataConvert
         public string ConvertToXml(Record record)
         {
             StringBuilder xmlRecord = new StringBuilder();
-            xmlRecord.Append($"	<record id=”{count}”>\n");
+            xmlRecord.Append($"	<record id=\"{count}\">\n");
             foreach (var tagValue in record.TagsValues)
             {
                 try

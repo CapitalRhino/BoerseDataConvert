@@ -16,7 +16,7 @@ namespace BoerseDataConvert
         public Reader(string adr, string[] filesNames)
         {
             fileInd = 0;
-            reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252), true);
+            reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
             this.adr = adr;
             this.filesNames = filesNames;
             reader.ReadLine();
@@ -28,7 +28,7 @@ namespace BoerseDataConvert
             {
                 fileInd++;
                 reader.Close();
-                reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252), true);
+                reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
                 s = reader.ReadLine();
                 s = reader.ReadLine();
