@@ -25,20 +25,20 @@ namespace BoerseDataConvert
         public string ConvertToXml(Record record)
         {
             StringBuilder xmlRecord = new StringBuilder();
-            xmlRecord.Append($"    <record id=”{count}”>\n");
+            xmlRecord.Append($"	<record id=”{count}”>\n");
             foreach (var tagValue in record.TagsValues)
             {
                 try
                 {
                     string tag =CheckTagValue(tagValue.Key, tagValue.Value);
-                    xmlRecord.Append($"        <{tag}>{tagValue.Value}</{tag}>\n");
+                    xmlRecord.Append($"		<{tag}>{tagValue.Value}</{tag}>\n");
                 }
                 catch (ArgumentException e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
-            xmlRecord.Append($"    </record>");
+            xmlRecord.Append($"	</record>");
             count++;
             return xmlRecord.ToString();
         }
