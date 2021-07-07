@@ -9,17 +9,25 @@ namespace BoerseDataConvert
 {
     public class RecordController
     {
-        private static int count = 1;
+        private  int count;
+        private string fileName;
+
+        public RecordController(string fileName)
+        {
+            this.count = 1;
+            this.fileName = fileName;
+        }
+
         public string ConvertToXml(Record record)
         {
-            StringBuilder xlmRecord = new StringBuilder();
-            xlmRecord.Append($"<record id=”{count}”>\n");
+            StringBuilder xmlRecord = new StringBuilder();
+            xmlRecord.Append($"<record id=”{count}”>\n");
             foreach (var tagValue in record.TagsValues)
             {
                 try
                 {
                     string tag =CheckTagValue(tagValue.Key, tagValue.Value);
-                    xlmRecord.Append($"<{tag}>{tagValue.Value}</{tag}>\n");
+                    xmlRecord.Append($"<{tag}>{tagValue.Value}</{tag}>\n");
                 }
                 catch (ArgumentException e)
                 {
@@ -27,9 +35,9 @@ namespace BoerseDataConvert
                     throw new ArgumentException(e.Message);
                 }
             }
-            xlmRecord.Append($"</record>");
+            xmlRecord.Append($"</record>");
             count++;
-            return xlmRecord.ToString();
+            return xmlRecord.ToString();
         }
         private string CheckTagValue(string tag, string value)
         {
