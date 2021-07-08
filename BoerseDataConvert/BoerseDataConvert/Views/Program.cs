@@ -15,7 +15,7 @@ namespace BoerseDataConvert
             // -d directory or --dir directory
             // -o directory or --output direcory
             // -h - help
-
+            /*
             FileStream ostrm;
             StreamWriter writer1;
             TextWriter oldOut = Console.Out;
@@ -26,56 +26,20 @@ namespace BoerseDataConvert
             }
             catch (Exception e)
             {
-                Console.WriteLine("Cannot open Redirect.txt for writing");
                 Console.WriteLine(e.Message);
                 return;
             }
             Console.SetOut(writer1);
+            */
 
             // input handling
-            string zipFile = "", inputDir = "", outputDir = "";
-            Console.WriteLine();
-            if (args.Contains("-i") || args.Contains("--input"))
-            {
-                zipFile = args[Array.IndexOf(args, "-i") + 1];
-            }
-            if (args.Contains("-d") || args.Contains("--directory"))
-            {
-                inputDir = args[Array.IndexOf(args, "-d") + 1];
-            }
-            if (args.Contains("-o") || args.Contains("--output"))
-            {
-                outputDir = args[Array.IndexOf(args, "-o") + 1];
-            }
-            if (args.Contains("-h") || args.Contains("--help"))
-            {
-                Help();
-                return;
-            }
-            zipFile = @"D:\Code\ИТ Кариера\Стаж\задача\testdata.zip";
-            inputDir = @"D:\Code\ИТ Кариера\Стаж\задача\inputdir";
-            outputDir = @"D:\Code\ИТ Кариера\Стаж\задача\outputdir";
-            if (zipFile == "" || inputDir == "" || outputDir == "")
-            {
-                throw new ArgumentException("ERROR: Fields cannot be empty");
-            }
-
-            // TODO: clear matching files from inputDir
-            // TODO: create output dir if nonexistent
+            string[] input = InputValidate(args);
+            string zipFile = input[0], inputDir = input[1], outputDir = input[2];
 
             CheckFreeDisk(outputDir);
+            ZipExtract(zipFile, inputDir);
 
-            try
-            {
-                ZipFile.ExtractToDirectory(zipFile, inputDir); // zip extract
-                Console.WriteLine("INFO: Successful ZIP extraction");
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            // read files
+            // only read filenames
             string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
 
             Reader reader = new Reader(inputDir, fileNames);
@@ -98,6 +62,7 @@ namespace BoerseDataConvert
                 }
             }
             Console.WriteLine("INFO: Success, exiting");
+            Environment.Exit(0);
         }
         static void Help()
         {
@@ -108,6 +73,7 @@ namespace BoerseDataConvert
             Console.WriteLine("-d <working directory> or --directory <working directory>");
             Console.WriteLine("-o <output directory> or --output <output directory>");
             Console.WriteLine("-h or --help - Prints this message");
+            Environment.Exit(0);
         }
         static void CheckFreeDisk(string outputDir)
         {
@@ -117,8 +83,51 @@ namespace BoerseDataConvert
             Console.WriteLine($"INFO: {availableSpace / gibibyte}GiB available");
             if (availableSpace < 2147483648)
             {
+                Environment.ExitCode = 3;
                 throw new IOException($"ERROR: Insufficient disk space, {availableSpace / gibibyte}GiB less than 2GiB");
             }
+        }
+        static string[] InputValidate(string[] args)
+        {
+            string[] output = new string[3];
+            // check input zipfile parameter
+            if (args.Contains("-i") || args.Contains("--input"))
+            {
+                output[0] = args[Array.IndexOf(args, "-i") + 1];
+            }
+            // check input directory parameter
+            if (args.Contains("-d") || args.Contains("--directory"))
+            {
+                output[1] = args[Array.IndexOf(args, "-d") + 1];
+            }
+            // check output directory parameter
+            if (args.Contains("-o") || args.Contains("--output"))
+            {
+                output[2] = args[Array.IndexOf(args, "-o") + 1];
+            }
+            // check help parameter
+            if (args.Contains("-h") || args.Contains("--help"))
+            {
+                Help();
+            }
+            // Checks if somehow the flags get in the output and if
+            // the output string are null. Prevents invalid paths.
+            if (output.Contains("-i") || output.Contains("--input") ||
+                output.Contains("-d") || output.Contains("--directory") ||
+                output.Contains("-o") || output.Contains("--output") ||
+                output.Contains("-h") || output.Contains("--help") || 
+                output[0] == null || output[1] == null || output[2] == null)
+            {
+                throw new ArgumentException("ERROR: Parameters cannot be empty");
+            }
+            // returns the strings
+            return output;
+        }
+        static void ZipExtract(string zipFile, string inputDir)
+        {
+            Directory.CreateDirectory(inputDir);
+            ZipFile.ExtractToDirectory(zipFile, inputDir, true); // zip extract
+            Console.WriteLine("INFO: Successful ZIP extraction");
         }
     }
 }
