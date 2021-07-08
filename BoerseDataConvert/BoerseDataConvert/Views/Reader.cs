@@ -39,7 +39,7 @@ namespace BoerseDataConvert
             foreach (var item in sr)
             {
                 string[] d = item.Split('#').ToArray();
-                a.Add(d[0], d[1]);
+                a.Add(d[0], String.Join('#', d.Skip(1)));
             }
             Record record = new Record();
             record.TagsValues = a;

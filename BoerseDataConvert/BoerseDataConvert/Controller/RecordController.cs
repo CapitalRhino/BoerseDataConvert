@@ -54,14 +54,17 @@ namespace BoerseDataConvert
                     string[] line = reader.ReadLine().Split('|').ToArray();
                     if (line[0] == tag) tagLine = line;
                 }
-                if (tagLine == null) throw new ArgumentException("Invalid tag!");
+                if (tagLine == null) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
                 tagname = tagLine[1];
                 if (value != "NULL" && tagLine.Length == 3)
                 {
                     string[] valueType = tagLine[2].Split('-').ToArray();
                     if (valueType.Length == 2)
                     {
-                        if (value.Length > int.Parse(valueType[1])) throw new ArgumentException("Value is too long!");
+                        if (value.Length > int.Parse(valueType[1]))
+                        {
+                            throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{valueType[1]}\", {cur_fileName} line {count + 1}");
+                        }
                     }
                     else
                     {
@@ -71,7 +74,7 @@ namespace BoerseDataConvert
                         }
                         catch (FormatException)
                         {
-                            throw new ArgumentException("Value does not represent a number in a valid format!");
+                            throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                         }
 
                     }
@@ -89,7 +92,10 @@ namespace BoerseDataConvert
                             break;
                         }
                     }
-                    if (!countain) throw new ArgumentException("Value is not in value range!");
+                    if (!countain)
+                    {
+                        throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                    }
                 }
             }
             return tagname;

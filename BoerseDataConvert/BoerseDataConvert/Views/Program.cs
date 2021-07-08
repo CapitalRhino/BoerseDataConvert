@@ -16,6 +16,22 @@ namespace BoerseDataConvert
             // -o directory or --output direcory
             // -h - help
 
+            FileStream ostrm;
+            StreamWriter writer1;
+            TextWriter oldOut = Console.Out;
+            try
+            {
+                ostrm = new FileStream("./log.txt", FileMode.OpenOrCreate, FileAccess.Write);
+                writer1 = new StreamWriter(ostrm);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Cannot open Redirect.txt for writing");
+                Console.WriteLine(e.Message);
+                return;
+            }
+            Console.SetOut(writer1);
+
             // input handling
             string zipFile = "", inputDir = "", outputDir = "";
             Console.WriteLine();
@@ -37,7 +53,7 @@ namespace BoerseDataConvert
                 return;
             }
             zipFile = @"D:\Code\ИТ Кариера\Стаж\задача\testdata.zip";
-            inputDir = @"D:\Code\ИТ Кариера\Стаж\задача\TestData";
+            inputDir = @"D:\Code\ИТ Кариера\Стаж\задача\inputdir";
             outputDir = @"D:\Code\ИТ Кариера\Стаж\задача\outputdir";
             if (zipFile == "" || inputDir == "" || outputDir == "")
             {
