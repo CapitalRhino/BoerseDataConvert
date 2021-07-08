@@ -15,29 +15,47 @@ namespace BoerseDataConvert
             // -d directory or --dir directory
             // -o directory or --output direcory
             // -h - help
-            // Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            // input handling
+            string zipFile = "", inputDir = "", outputDir = "";
             Console.WriteLine();
             if (args.Contains("-i") || args.Contains("--input"))
             {
-                string zipfile = args[Array.IndexOf(args, "-i") + 1];
+                zipFile = args[Array.IndexOf(args, "-i") + 1];
             }
             if (args.Contains("-d") || args.Contains("--directory"))
             {
-                string inputDir = args[Array.IndexOf(args, "-d" + 1)];
+                inputDir = args[Array.IndexOf(args, "-d") + 1];
             }
             if (args.Contains("-o") || args.Contains("--output"))
             {
-                string outputDir = args[Array.IndexOf(args, "-o" + 1)];
+                outputDir = args[Array.IndexOf(args, "-o") + 1];
             }
             if (args.Contains("-h") || args.Contains("--help"))
             {
                 Help();
                 return;
             }
-             Reader reader = new Reader(@"E:\Downloads\TestData-2021_07_02", new string[1] { "subtype910.txt" });
-          //  Reader reader = new Reader(@"D:\Code\ИТ Кариера\Стаж\задача\TestData-2021_07_02", new string[1] { "subtype910.txt" });
-            RecordController a = new RecordController("subtype910.txt");
-            Writer writer = new Writer("subtype910.txt");
+            zipFile = @"D:\Code\ИТ Кариера\Стаж\задача\testdata.zip";
+            inputDir = @"D:\Code\ИТ Кариера\Стаж\задача\TestData";
+            outputDir = @"D:\Code\ИТ Кариера\Стаж\задача\outputdir";
+            if (zipFile == "" || inputDir == "" || outputDir == "")
+            {
+                throw new ArgumentException("Fields cannot be empty");
+            }
+
+            // TODO: clear matching files from inputDir
+            // TODO: check free disk space before file ops
+
+            ZipFile.ExtractToDirectory(zipFile, inputDir); // zip extract
+
+            // read files
+            string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
+
+            Reader reader = new Reader(inputDir, fileNames);
+            Writer writer = new Writer(outputDir, fileNames[0]);
+            RecordController a = new RecordController(fileNames[0]);
+
             while (true)
             {
                 try
@@ -48,20 +66,21 @@ namespace BoerseDataConvert
                 }
                 catch (IndexOutOfRangeException e)
                 {
+                    Reader.EndFile();
                     Writer.EndFile();
                     break;
                 }
-                
             }
-        }
-        static void Help()
-        {
-            Console.WriteLine("BoerseDataConvert v1.0.0");
-            Console.WriteLine("D. Delchev and D. Byalkov, 2021");
-            Console.WriteLine("---");
-            Console.WriteLine("-i <input zip file> or --input <input zip file>");
-            Console.WriteLine("-d <working directory> or --directory <working directory>");
-            Console.WriteLine("-o <output directory> or --output <output directory>");
+            static void Help()
+            {
+                Console.WriteLine("BoerseDataConvert v1.0.0");
+                Console.WriteLine("D. Delchev and D. Byalkov, 2021");
+                Console.WriteLine("---");
+                Console.WriteLine("-i <input zip file> or --input <input zip file>");
+                Console.WriteLine("-d <working directory> or --directory <working directory>");
+                Console.WriteLine("-o <output directory> or --output <output directory>");
+                Console.WriteLine("-h or --help - Prints this message");
+            }
         }
     }
 }

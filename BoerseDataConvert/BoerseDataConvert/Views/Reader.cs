@@ -10,7 +10,7 @@ namespace BoerseDataConvert
     public class Reader
     {
         private string[] filesNames;
-        private StreamReader reader;
+        private static StreamReader reader;
         private int fileInd;
         private string adr;
         public Reader(string adr, string[] filesNames)
@@ -27,14 +27,14 @@ namespace BoerseDataConvert
             if (s.Substring(0, 11) == "Datensaetze")
             {
                 fileInd++;
-                reader.Close();
+                EndFile();
                 reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
                 Writer.NextFile(filesNames[fileInd]);
                 s = reader.ReadLine();
                 s = reader.ReadLine();
             }
-             string[] sr = s.Split("|").ToArray();
+            string[] sr = s.Split("|").ToArray();
             Dictionary<string, string> a = new Dictionary<string, string>();
             foreach (var item in sr)
             {
@@ -44,6 +44,10 @@ namespace BoerseDataConvert
             Record record = new Record();
             record.TagsValues = a;
             return record;
+        }
+        internal static void EndFile()
+        {
+            reader.Close();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace BoerseDataConvert
 {
     public class RecordController
     {
-        private  static int count;
+        private static int count;
         private static string cur_fileName;
 
         public RecordController(string fileName)
@@ -30,7 +30,7 @@ namespace BoerseDataConvert
             {
                 try
                 {
-                    string tag =CheckTagValue(tagValue.Key, tagValue.Value);
+                    string tag = CheckTagValue(tagValue.Key, tagValue.Value);
                     xmlRecord.Append($"		<{tag}>{tagValue.Value}</{tag}>\n");
                 }
                 catch (ArgumentException e)
@@ -44,11 +44,11 @@ namespace BoerseDataConvert
         }
         private string CheckTagValue(string tag, string value)
         {
-            string tagname="";
+            string tagname = "";
             StreamReader reader = new StreamReader(@"..\..\..\..\tags.txt");
             using (reader)
             {
-                string[] tagLine= null ;
+                string[] tagLine = null;
                 while (!reader.EndOfStream)
                 {
                     string[] line = reader.ReadLine().Split('|').ToArray();
@@ -76,7 +76,7 @@ namespace BoerseDataConvert
 
                     }
                 }
-                else 
+                else
                 {
                     string[] valueRange = tagLine[3].Split('#').ToArray();
                     bool countain = false;
@@ -87,10 +87,10 @@ namespace BoerseDataConvert
                         {
                             countain = true;
                             break;
-                        }                   
+                        }
                     }
-                    if(!countain) throw new ArgumentException("Value is not in value range!");
-                }      
+                    if (!countain) throw new ArgumentException("Value is not in value range!");
+                }
             }
             return tagname;
         }

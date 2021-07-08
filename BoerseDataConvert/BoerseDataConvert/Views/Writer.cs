@@ -11,13 +11,16 @@ namespace BoerseDataConvert
     {
         private static string curFilesName;
         private static StreamWriter writer;
+        private static string address;
 
-        public Writer(string filesName)
+        public Writer(string _address, string filesName)
         {
+            address = _address;
             curFilesName = filesName;
             string[] file = curFilesName.Split('.').ToArray();
-            writer = new StreamWriter($"{file[0]}.xml");
-            writer.WriteLine($"<table name=”{file[0]}”>");
+            writer = new StreamWriter($@"{address}/{file[0]}.xml");
+            writer.WriteLine($"<table name=\"{file[0]}\">");
+            
         }
         public void WriteRecord(string record)
         {
@@ -28,8 +31,8 @@ namespace BoerseDataConvert
             EndFile();
             curFilesName = fileName;
             string[] file = curFilesName.Split('.').ToArray();
-            writer = new StreamWriter($"{file[0]}.xml");
-            writer.WriteLine($"<table name=”{file[0]}”>");
+            writer = new StreamWriter($@"{address}/{file[0]}.xml");
+            writer.WriteLine($"<table name=\"{file[0]}\">");
         }
         public static void EndFile()
         {
