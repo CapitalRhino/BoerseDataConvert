@@ -17,6 +17,7 @@ namespace BoerseDataConvert
         {
             address = _address;
             curFilesName = filesName;
+            Directory.CreateDirectory(address);
             string[] file = curFilesName.Split('.').ToArray();
             writer = new StreamWriter($@"{address}/{file[0]}.xml");
             writer.WriteLine($"<table name=\"{file[0]}\">");
