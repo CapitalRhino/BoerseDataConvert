@@ -11,9 +11,9 @@ namespace BoerseDataConvert
     {
         StreamReader reader ;
         Dictionary<string, string[]> table;
-        public TagsTable()
+        public TagsTable(string tags)
         {
-            reader = new StreamReader(@"..\..\..\..\tags.txt");
+            reader = new StreamReader(tags);
             table = new Dictionary<string, string[]>();
             LoadInfo();
         }
