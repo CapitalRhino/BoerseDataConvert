@@ -52,7 +52,7 @@
 088|Reference_Market|str-4
 089|Reference_Price|dec-18-9
 090|Rolling_Strategy|str-1|O#D#N#NULL
-091|Rolling_Frequency|st1-Y#S#M#Q#O#NULL
+091|Rolling_Frequency|str-1|Y#S#M#Q#O#NULL
 093|Management_Fee|dec-20-5
 097|LockIn|str-1|J#N
 099|Capital_Protection|str-1|J#N
