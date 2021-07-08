@@ -68,6 +68,7 @@ namespace BoerseDataConvert
                 }
                 else
                 {
+                    if (value == "") return tagname;
                     try
                     {
                         double.Parse(value);
