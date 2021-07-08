@@ -35,11 +35,12 @@ namespace BoerseDataConvert
                 s = reader.ReadLine();
             }
             string[] sr = s.Split("|").ToArray();
-            Dictionary<string, string> a = new Dictionary<string, string>();
+            List<KeyValuePair<string, string>>a = new List<KeyValuePair<string, string>>();
             foreach (var item in sr)
             {
                 string[] d = item.Split('#').ToArray();
-                a.Add(d[0], String.Join('#', d.Skip(1)));
+                var pair = new KeyValuePair<string, string>(d[0], String.Join('#', d.Skip(1)));
+                a.Add(pair);
             }
             Record record = new Record();
             record.TagsValues = a;

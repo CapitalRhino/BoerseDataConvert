@@ -8,6 +8,6 @@ namespace BoerseDataConvert
 {
     public class Record
     {
-        public Dictionary<string, string> TagsValues;
+        public List<KeyValuePair<string, string>>TagsValues;
     }
 }

@@ -11,11 +11,12 @@ namespace BoerseDataConvert
     {
         private static int count;
         private static string cur_fileName;
-
+        private TagsTable tagsTable;
         public RecordController(string fileName)
         {
             count = 1;
             cur_fileName = fileName;
+            tagsTable = new TagsTable();
         }
         public static void NextFile(string fileName)
         {
@@ -44,61 +45,61 @@ namespace BoerseDataConvert
         }
         private string CheckTagValue(string tag, string value)
         {
-            string tagname = "";
-            StreamReader reader = new StreamReader(@"..\..\..\..\tags.txt");
-            using (reader)
+            string[] tagLine;
+            try
             {
-                string[] tagLine = null;
-                while (!reader.EndOfStream)
-                {
-                    string[] line = reader.ReadLine().Split('|').ToArray();
-                    if (line[0] == tag) tagLine = line;
-                }
-                if (tagLine == null) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
-                tagname = tagLine[1];
-                if (value != "NULL" && tagLine.Length == 3)
-                {
-                    string[] valueType = tagLine[2].Split('-').ToArray();
-                    if (valueType.Length == 2)
-                    {
-                        if (value.Length > int.Parse(valueType[1]))
-                        {
-                            throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{valueType[1]}\", {cur_fileName} line {count + 1}");
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            double.Parse(value);
-                        }
-                        catch (FormatException)
-                        {
-                            throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
-                        }
+                tagLine = tagsTable.GetTagValue(tag);
+            }
+            catch (KeyNotFoundException)
+            {
 
+                throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
+            }
+            string tagname = tagLine[0];
+            if (value != "NULL" && tagLine.Length == 2)
+            {
+                string[] valueType = tagLine[1].Split('-').ToArray();
+                if (valueType.Length == 2)
+                {
+                    if (value.Length > int.Parse(valueType[1]))
+                    {
+                        throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{valueType[1]}\", {cur_fileName} line {count + 1}");
                     }
                 }
                 else
                 {
-                    string[] valueRange = tagLine[3].Split('#').ToArray();
-                    bool countain = false;
-                    if (value == "") return tagname;
-                    for (int i = 0; i < valueRange.Length; i++)
+                    try
                     {
-                        if (valueRange[i] == value)
-                        {
-                            countain = true;
-                            break;
-                        }
+                        double.Parse(value);
                     }
-                    if (!countain)
+                    catch (FormatException)
                     {
-                        throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                        throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                     }
+
+                }
+            }
+            else
+            {
+                string[] valueRange = tagLine[2].Split('#').ToArray();
+                bool countain = false;
+                if (value == "") return tagname;
+                for (int i = 0; i < valueRange.Length; i++)
+                {
+                    if (valueRange[i] == value)
+                    {
+                        countain = true;
+                        break;
+                    }
+                }
+                if (!countain)
+                {
+                    throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                 }
             }
             return tagname;
         }
+
     }
 }
+

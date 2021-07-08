@@ -90,7 +90,7 @@ namespace BoerseDataConvert
                     string s = a.ConvertToXml(record);
                     writer.WriteRecord(s);
                 }
-                catch (IndexOutOfRangeException e)
+                catch (IndexOutOfRangeException)
                 {
                     Reader.EndFile();
                     Writer.EndFile();
