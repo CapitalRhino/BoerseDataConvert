@@ -57,13 +57,23 @@ namespace BoerseDataConvert
             outputDir = @"D:\Code\ИТ Кариера\Стаж\задача\outputdir";
             if (zipFile == "" || inputDir == "" || outputDir == "")
             {
-                throw new ArgumentException("Fields cannot be empty");
+                throw new ArgumentException("ERROR: Fields cannot be empty");
             }
 
             // TODO: clear matching files from inputDir
-            // TODO: check free disk space before file ops
+            // TODO: create output dir if nonexistent
 
-            ZipFile.ExtractToDirectory(zipFile, inputDir); // zip extract
+            CheckFreeDisk(outputDir);
+
+            try
+            {
+                ZipFile.ExtractToDirectory(zipFile, inputDir); // zip extract
+                Console.WriteLine("INFO: Successful ZIP extraction");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // read files
             string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
@@ -87,15 +97,27 @@ namespace BoerseDataConvert
                     break;
                 }
             }
-            static void Help()
+            Console.WriteLine("INFO: Success, exiting");
+        }
+        static void Help()
+        {
+            Console.WriteLine("BoerseDataConvert v1.0.0");
+            Console.WriteLine("D. Delchev and D. Byalkov, 2021");
+            Console.WriteLine("---");
+            Console.WriteLine("-i <input zip file> or --input <input zip file>");
+            Console.WriteLine("-d <working directory> or --directory <working directory>");
+            Console.WriteLine("-o <output directory> or --output <output directory>");
+            Console.WriteLine("-h or --help - Prints this message");
+        }
+        static void CheckFreeDisk(string outputDir)
+        {
+            double gibibyte = 1073741824;
+            DriveInfo driveInfo = new DriveInfo(Directory.GetDirectoryRoot(outputDir));
+            double availableSpace = driveInfo.AvailableFreeSpace;
+            Console.WriteLine($"INFO: {availableSpace / gibibyte}GiB available");
+            if (availableSpace < 2147483648)
             {
-                Console.WriteLine("BoerseDataConvert v1.0.0");
-                Console.WriteLine("D. Delchev and D. Byalkov, 2021");
-                Console.WriteLine("---");
-                Console.WriteLine("-i <input zip file> or --input <input zip file>");
-                Console.WriteLine("-d <working directory> or --directory <working directory>");
-                Console.WriteLine("-o <output directory> or --output <output directory>");
-                Console.WriteLine("-h or --help - Prints this message");
+                throw new IOException($"ERROR: Insufficient disk space, {availableSpace / gibibyte}GiB less than 2GiB");
             }
         }
     }
