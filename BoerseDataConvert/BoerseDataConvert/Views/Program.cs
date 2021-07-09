@@ -150,6 +150,7 @@ namespace BoerseDataConvert
         }
         static void ZipExtract(string zipFile, string inputDir)
         {
+            Directory.Delete(inputDir, true);
             Directory.CreateDirectory(inputDir);
             ZipFile.ExtractToDirectory(zipFile, inputDir, true); // zip extract
             Console.WriteLine("INFO: Successful ZIP extraction");
