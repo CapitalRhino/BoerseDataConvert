@@ -26,8 +26,9 @@ namespace BoerseDataConvert
             string s = reader.ReadLine();
             if (s.Substring(0, 11) == "Datensaetze")
             {
+                Console.WriteLine($"File{ filesNames[fileInd]}.xml was converted successfully");
                 fileInd++;
-                EndFile();
+                EndFile();               
                 reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
                 Writer.NextFile(filesNames[fileInd]);
