@@ -15,7 +15,7 @@ namespace BoerseDataConvert
             // -d directory or --dir directory
             // -o directory or --output direcory
             // -h - help
-            /*
+            
             FileStream ostrm;
             StreamWriter writer1;
             TextWriter oldOut = Console.Out;
@@ -30,11 +30,11 @@ namespace BoerseDataConvert
                 return;
             }
             Console.SetOut(writer1);
-            */
+            
 
             // input handling
             string[] input = InputValidate(args);
-            string zipFile = input[0], inputDir = input[1], outputDir = input[2];
+            string zipFile = input[0], inputDir = input[1], outputDir = input[2], tags = input[3];
 
             CheckFreeDisk(outputDir);
             ZipExtract(zipFile, inputDir);
@@ -44,7 +44,7 @@ namespace BoerseDataConvert
 
             Reader reader = new Reader(inputDir, fileNames);
             Writer writer = new Writer(outputDir, fileNames[0]);
-            RecordController a = new RecordController(fileNames[0]);
+            RecordController a = new RecordController(fileNames[0], tags);
 
             while (true)
             {
@@ -72,6 +72,7 @@ namespace BoerseDataConvert
             Console.WriteLine("-i <input zip file> or --input <input zip file>");
             Console.WriteLine("-d <working directory> or --directory <working directory>");
             Console.WriteLine("-o <output directory> or --output <output directory>");
+            Console.WriteLine("-t <tags file> or --tags <tags file>");
             Console.WriteLine("-h or --help - Prints this message");
             Environment.Exit(0);
         }
@@ -89,21 +90,45 @@ namespace BoerseDataConvert
         }
         static string[] InputValidate(string[] args)
         {
-            string[] output = new string[3];
+            string[] output = new string[4];
             // check input zipfile parameter
-            if (args.Contains("-i") || args.Contains("--input"))
+            if (args.Contains("-i"))
             {
                 output[0] = args[Array.IndexOf(args, "-i") + 1];
             }
+            if (args.Contains("--input"))
+            {
+                output[0] = args[Array.IndexOf(args, "--input") + 1];
+            }
             // check input directory parameter
-            if (args.Contains("-d") || args.Contains("--directory"))
+            if (args.Contains("-d"))
             {
                 output[1] = args[Array.IndexOf(args, "-d") + 1];
             }
+            if (args.Contains("--directory"))
+            {
+                output[1] = args[Array.IndexOf(args, "--directory") + 1];
+            }
             // check output directory parameter
-            if (args.Contains("-o") || args.Contains("--output"))
+            if (args.Contains("-o"))
             {
                 output[2] = args[Array.IndexOf(args, "-o") + 1];
+            }
+            if (args.Contains("--output"))
+            {
+                output[2] = args[Array.IndexOf(args, "-output") + 1];
+            }
+            if (args.Contains("-t"))
+            {
+                output[3] = args[Array.IndexOf(args, "-t") + 1];
+            }
+            if (args.Contains("--tags"))
+            {
+                output[3] = args[Array.IndexOf(args, "--tags") + 1];
+            }
+            if (!args.Contains("-t") || !args.Contains("--tags"))
+            {
+                output[3] = "tags.txt";
             }
             // check help parameter
             if (args.Contains("-h") || args.Contains("--help"))

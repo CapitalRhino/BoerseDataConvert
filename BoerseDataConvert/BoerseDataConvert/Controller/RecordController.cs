@@ -12,11 +12,11 @@ namespace BoerseDataConvert
         private static int count;
         private static string cur_fileName;
         private TagsTable tagsTable;
-        public RecordController(string fileName)
+        public RecordController(string fileName, string tags)
         {
             count = 1;
             cur_fileName = fileName;
-            tagsTable = new TagsTable();
+            tagsTable = new TagsTable(tags);
         }
         public static void NextFile(string fileName)
         {
