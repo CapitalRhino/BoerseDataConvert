@@ -27,7 +27,7 @@ namespace BoerseDataConvert
         {
             StringBuilder xmlRecord = new StringBuilder();
             xmlRecord.Append($"	<record id=\"{count}\">\n");
-            foreach (var tagValue in record.TagsValues)
+            foreach (var tagValue in record)
             {
                 try
                 {
@@ -43,27 +43,16 @@ namespace BoerseDataConvert
             count++;
             return xmlRecord.ToString();
         }
-        private string CheckTagValue(string tag, string value)
+        private string CheckTagValue(int tag, string value)
         {
-            string[] tagLine;
-            try//Checks if the tag exists
+            
+            if(tagsTable.CheckInvalidTag(tag)) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
+            string tagname = tagsTable.GetTagName(tag);
+            if (value != "NULL" && tagsTable.HaveValueRanges(tag))//Checks if the tag have not a value ranges
             {
-                tagLine = tagsTable.GetTagValue(tag);
-            }
-            catch (KeyNotFoundException)
-            { 
-                throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
-            }
-            string tagname = tagLine[0];
-            if (value != "NULL" && tagLine.Length == 2)//Checks if the tag have not a value ranges
-            {
-                string[] valueType = tagLine[1].Split('-').ToArray();
-                if (valueType.Length == 2)//Checks if value type is string
-                {
-                    if (value.Length > int.Parse(valueType[1]))//Checks if the length of the value is bigger than permitted
-                    {
-                        throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{valueType[1]}\", {cur_fileName} line {count + 1}");
-                    }
+                if (tagsTable.IsString(tag) && tagsTable.CheckStringLength(tag,value.Length))//Checks if value type is string
+                {                   
+                    throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
                 }
                 else//Checks if value type is decimal
                 {

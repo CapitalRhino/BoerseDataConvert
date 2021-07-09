@@ -35,16 +35,13 @@ namespace BoerseDataConvert
                 s = reader.ReadLine();
                 s = reader.ReadLine();
             }
-            string[] sr = s.Split("|").ToArray();
-            List<KeyValuePair<string, string>>a = new List<KeyValuePair<string, string>>();
+            string[] sr = s.Split("|").ToArray(); 
+            Record record = new Record();
             foreach (var item in sr)
             {
-                string[] d = item.Split('#').ToArray();
-                var pair = new KeyValuePair<string, string>(d[0], String.Join('#', d.Skip(1)));
-                a.Add(pair);
-            }
-            Record record = new Record();
-            record.TagsValues = a;
+                string[] d = item.Split('#',2).ToArray();
+                record.Add(int.Parse(d[0]),  d[1]);
+            }           
             return record;
         }
         internal static void EndFile()
