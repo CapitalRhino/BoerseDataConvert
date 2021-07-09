@@ -36,8 +36,16 @@ namespace BoerseDataConvert
             string[] input = InputValidate(args);
             string zipFile = input[0], inputDir = input[1], outputDir = input[2], tags = input[3];
 
-            CheckFreeDisk(outputDir);
-            ZipExtract(zipFile, inputDir);
+            try
+            {
+                CheckFreeDisk(outputDir);
+                ZipExtract(zipFile, inputDir);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                Environment.Exit();
+            }
 
             // only read filenames
             string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
@@ -143,6 +151,7 @@ namespace BoerseDataConvert
                 output.Contains("-h") || output.Contains("--help") || 
                 output[0] == null || output[1] == null || output[2] == null)
             {
+                Environment.ExitCode = 1;
                 throw new ArgumentException("ERROR: Parameters cannot be empty");
             }
             // returns the strings
