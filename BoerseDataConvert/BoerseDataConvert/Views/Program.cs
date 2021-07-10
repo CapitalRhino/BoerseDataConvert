@@ -44,28 +44,26 @@ namespace BoerseDataConvert
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.Message);
-                Environment.Exit();
+                Environment.Exit(0);
             }
 
             // only read filenames
             string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
 
             Reader reader = new Reader(inputDir, fileNames);
-            Writer writer = new Writer(outputDir, fileNames[0]);
-            RecordController a = new RecordController(fileNames[0], tags);
+            RecordController a = new RecordController(outputDir,fileNames[0], tags);
 
             while (true)
             {
                 try
                 {
                     Record record = reader.ReadLineRecord();
-                    string s = a.ConvertToXml(record);
-                    writer.WriteRecord(s);
+                    a.WriteXmlRecord(record);
                 }
                 catch (IndexOutOfRangeException)
                 {
                     Reader.EndFile();
-                    Writer.EndFile();
+                    RecordController.EndFile();
                     break;
                 }
             }

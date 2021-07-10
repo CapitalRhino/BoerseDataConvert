@@ -31,7 +31,6 @@ namespace BoerseDataConvert
                 EndFile();               
                 reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
-                Writer.NextFile(filesNames[fileInd]);
                 s = reader.ReadLine();
                 s = reader.ReadLine();
             }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace BoerseDataConvert
 {
@@ -12,36 +13,60 @@ namespace BoerseDataConvert
         private static int count;
         private static string cur_fileName;
         private TagsTable tagsTable;
-        public RecordController(string fileName, string tags)
+        private static string address;
+        private static XmlWriter writer;
+        public RecordController(string adr,string fileName, string tags)
         {
             count = 1;
-            cur_fileName = fileName;
+            address = adr;
+            cur_fileName = fileName.Split('.').First();
+            Directory.CreateDirectory(address);
             tagsTable = new TagsTable(tags);
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            XmlWriter writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
+            writer.WriteStartDocument();
+            writer.WriteStartElement("table");
+            writer.WriteAttributeString("name", null, "file");
         }
         public static void NextFile(string fileName)
         {
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Close();
+            cur_fileName = fileName.Split('.').First();
             count = 1;
             cur_fileName = fileName;
+            writer.WriteStartDocument();
+            writer.WriteStartElement("table");
+            writer.WriteAttributeString("name", null, "file");
         }
-        public string ConvertToXml(Record record)
+        public void WriteXmlRecord (Record record)
         {
-            StringBuilder xmlRecord = new StringBuilder();
-            xmlRecord.Append($"	<record id=\"{count}\">\n");
+            writer.WriteStartElement("record");
+            writer.WriteAttributeString("id", null, count.ToString());
             foreach (var tagValue in record)
             {
                 try
                 {
                     string tag = CheckTagValue(tagValue.Key, tagValue.Value);
-                    xmlRecord.Append($"		<{tag}>{tagValue.Value}</{tag}>\n");
+                    writer.WriteStartElement(tag);
+                    writer.WriteValue(tagValue.Value);
+                    writer.WriteEndElement();
                 }
                 catch (ArgumentException e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
-            xmlRecord.Append($"	</record>");
+            writer.WriteEndElement();
             count++;
-            return xmlRecord.ToString();
+        }
+        public static void EndFile()
+        {
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Close();
         }
         private string CheckTagValue(int tag, string value)
         {
@@ -50,7 +75,7 @@ namespace BoerseDataConvert
             string tagname = tagsTable.GetTagName(tag);
             if (value != "NULL" && tagsTable.HaveValueRanges(tag))//Checks if the tag have not a value ranges
             {
-                if (tagsTable.IsString(tag) && tagsTable.CheckStringLength(tag,value.Length))//Checks if value type is string
+                if (tagsTable.IsString(tag) && tagsTable.CheckStringLengthToBig(tag,value.Length))//Checks if value type is string
                 {                   
                     throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
                 }
@@ -69,21 +94,7 @@ namespace BoerseDataConvert
             }
             else//Checks if the tag have  a value ranges
             {
-                string[] valueRange = tagLine[2].Split('#').ToArray();
-                bool countain = false;
-                if (value == "") return tagname;
-                for (int i = 0; i < valueRange.Length; i++)
-                {
-                    if (valueRange[i] == value)//Checks if the value is in value ranges
-                    {
-                        countain = true;
-                        break;
-                    }
-                }
-                if (!countain)
-                {
-                    throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
-                }
+               if(!tagsTable.CheckValidValue(tag,value))throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
             }
             return tagname;
         }

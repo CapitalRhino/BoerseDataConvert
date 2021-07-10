@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Remove="Model\NewFile1.cs" />
-    <Compile Remove="Model\Tag.cs" />
   </ItemGroup>
 
   <ItemGroup>

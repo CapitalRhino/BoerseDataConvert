@@ -44,11 +44,11 @@ namespace BoerseDataConvert
         {
             return table[tag].HaveValueRanges;
         }
-        public int GetMaxValueLengthToBig(int tag)
+        public int GetMaxValueLength(int tag)
         {
             return table[tag].StringLength;
         }
-        public bool CheckStringLength(int tag, int value)
+        public bool CheckStringLengthToBig(int tag, int value)
         {
             return table[tag].StringLength<value;
         }
