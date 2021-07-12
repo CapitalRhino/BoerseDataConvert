@@ -34,6 +34,8 @@ namespace BoerseDataConvert
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
+            WarningStat.PrintWarnigs();
+            WarningStat.Refresh(fileName);
             cur_fileName = fileName.Split('.').First();
             count = 1;
             Console.WriteLine(cur_fileName + " start");
@@ -50,17 +52,11 @@ namespace BoerseDataConvert
             writer.WriteAttributeString("id", null, count.ToString());
             foreach (var tagValue in record)
             {
-                try
-                {
                     string tag = CheckTagValue(tagValue.Key, tagValue.Value);
                     writer.WriteStartElement(tag);
                     writer.WriteValue(tagValue.Value);
                     writer.WriteEndElement();
-                }
-                catch (ArgumentException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+
             }
             writer.WriteEndElement();
             count++;
@@ -70,10 +66,11 @@ namespace BoerseDataConvert
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
+            WarningStat.PrintWarnigs();
         }
         private string CheckTagValue(int tag, string value)
         {
-            if(tagsTable.CheckInvalidTag(tag)) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
+            if (tagsTable.CheckInvalidTag(tag)) WarningStat.Add(tag);
             string tagname = tagsTable.GetTagName(tag);
             if (value == "") return tagname;
             if (value != "NULL" && !tagsTable.HaveValueRanges(tag)) //Checks if the tag have not a value ranges
@@ -82,7 +79,7 @@ namespace BoerseDataConvert
                 {
                     if (tagsTable.CheckStringLengthToBig(tag, value.Length))
                     {
-                        throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
+                        Console.WriteLine($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
                     }
                 }
                 else//Checks if value type is decimal
@@ -94,7 +91,7 @@ namespace BoerseDataConvert
                     }
                     catch (FormatException)
                     {
-                         throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");   
+                         Console.WriteLine($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");   
                     }
                 }
             }
@@ -102,7 +99,7 @@ namespace BoerseDataConvert
             {
                 if (!tagsTable.CheckValidValue(tag, value))
                 {
-                    throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                    Console.WriteLine($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                 }
             }
             return tagname;

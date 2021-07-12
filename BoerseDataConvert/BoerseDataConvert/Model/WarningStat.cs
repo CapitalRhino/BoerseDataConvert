@@ -4,32 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoerseDataConvert.Model
+namespace BoerseDataConvert
 {
-    public static  class WarningStat
+    public static class WarningStat
     {
-        private class Warning
-        {
-            string type;
-            int count;
-
-            public Warning(string type)
-            {
-                this.type = type;
-                count = 1;
-            }
-            public void Add()
-            {
-                count++;
-            }
-        }
-
-        private static Dictionary<int, Warning> tableWarnings = tableWarnings = new Dictionary<int, Warning>();
+        private static Dictionary<int, int> tableWarnings = tableWarnings = new Dictionary<int, int>();
         private static string curFile;
         public static void Refresh(string fileName)
         {
             curFile = fileName;
-            tableWarnings = new Dictionary<int,Warning>();
+            tableWarnings = new Dictionary<int, int>();
         }
         /*
          type "inv" - Ivalid tag
@@ -37,17 +21,34 @@ namespace BoerseDataConvert.Model
          type "notnum" - is not in a valid format for number
          type "range" - Value not in range 
         */
-        public static void Add(int tag,string type)//
+        public static void Add(int tag)//
         {
             if (tableWarnings.ContainsKey(tag))
             {
-                tableWarnings[tag].Add();
+                tableWarnings[tag]++;
             }
-            else 
+            else
             {
-                Warning warning = new Warning(type);
-                tableWarnings.Add(tag, warning);
+                tableWarnings.Add(tag, 1);
+            }
+        }
+        public static void PrintWarnigs()
+        {
+            if (tableWarnings.Count == 0)
+            {
+                Console.WriteLine($"There is no warnings in file {curFile}");
+            }
+            else
+            {
+                Console.WriteLine($"Warnings in file {curFile}");
+                foreach (var warning in tableWarnings)
+                {
+                    int tag = warning.Key;
+                    int count = warning.Value;
+                    Console.WriteLine($"Invalid tag \"{tag}\": {count} times.");
+                }
             }
         }
     }
 }
+
