@@ -28,6 +28,7 @@ namespace BoerseDataConvert
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
             writer.WriteAttributeString("name", null, cur_fileName);
+            WarningStat.Refresh(fileName);
         }
         public static void NextFile(string fileName)
         {
