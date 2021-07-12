@@ -73,11 +73,15 @@ namespace BoerseDataConvert
             
             if(tagsTable.CheckInvalidTag(tag)) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
             string tagname = tagsTable.GetTagName(tag);
+            if (value == "") return tagname;
             if (value != "NULL" && tagsTable.HaveValueRanges(tag))//Checks if the tag have not a value ranges
             {
-                if (tagsTable.IsString(tag) && tagsTable.CheckStringLengthToBig(tag,value.Length))//Checks if value type is string
-                {                   
-                    throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
+                if (tagsTable.IsString(tag))//Checks if value type is string
+                {
+                    if (tagsTable.CheckStringLengthToBig(tag, value.Length))
+                    {
+                        throw new ArgumentException($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
+                    }
                 }
                 else//Checks if value type is decimal
                 {
@@ -88,7 +92,7 @@ namespace BoerseDataConvert
                     }
                     catch (FormatException)
                     {
-                         throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");   
+                        throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                     }
                 }
             }
