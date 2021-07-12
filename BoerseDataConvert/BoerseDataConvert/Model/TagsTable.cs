@@ -14,7 +14,7 @@ namespace BoerseDataConvert
         public TagsTable(string tags)
         {
             reader = new StreamReader(tags);
-            table = new Tag[int.Parse(reader.ReadLine())];
+            table = new Tag[int.Parse(reader.ReadLine()) + 1];
             LoadInfo();
         }
         private void LoadInfo()

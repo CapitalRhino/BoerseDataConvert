@@ -24,10 +24,10 @@ namespace BoerseDataConvert
             tagsTable = new TagsTable(tags);
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
-            XmlWriter writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
+            writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
-            writer.WriteAttributeString("name", null, "file");
+            writer.WriteAttributeString("name", null, cur_fileName);
         }
         public static void NextFile(string fileName)
         {
@@ -36,10 +36,13 @@ namespace BoerseDataConvert
             writer.Close();
             cur_fileName = fileName.Split('.').First();
             count = 1;
-            cur_fileName = fileName;
+            Console.WriteLine(cur_fileName + " start");
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
-            writer.WriteAttributeString("name", null, "file");
+            writer.WriteAttributeString("name", null, cur_fileName);
         }
         public void WriteXmlRecord (Record record)
         {
@@ -70,11 +73,10 @@ namespace BoerseDataConvert
         }
         private string CheckTagValue(int tag, string value)
         {
-            
             if(tagsTable.CheckInvalidTag(tag)) throw new ArgumentException($"WARN: Invalid tag \"{tag}\", {cur_fileName} line {count + 1}");
             string tagname = tagsTable.GetTagName(tag);
             if (value == "") return tagname;
-            if (value != "NULL" && tagsTable.HaveValueRanges(tag))//Checks if the tag have not a value ranges
+            if (value != "NULL" && !tagsTable.HaveValueRanges(tag)) //Checks if the tag have not a value ranges
             {
                 if (tagsTable.IsString(tag))//Checks if value type is string
                 {
@@ -92,13 +94,16 @@ namespace BoerseDataConvert
                     }
                     catch (FormatException)
                     {
-                        throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                         throw new ArgumentException($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");   
                     }
                 }
             }
             else//Checks if the tag have  a value ranges
             {
-               if(!tagsTable.CheckValidValue(tag,value))throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                if (!tagsTable.CheckValidValue(tag, value))
+                {
+                    throw new ArgumentException($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                }
             }
             return tagname;
         }
