@@ -16,7 +16,7 @@ namespace BoerseDataConvert
         private static string address;
         private static XmlWriter writer;
         private static WarningStat warning;
-        public RecordController(string adr,string fileName, string tags)
+        public RecordController(string adr, string fileName, string tags)
         {
             count = 1;
             address = adr;
@@ -29,7 +29,7 @@ namespace BoerseDataConvert
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
             writer.WriteAttributeString("name", null, cur_fileName);
-            warning= new WarningStat(fileName);
+            warning = new WarningStat(fileName);
         }
         public static void NextFile(string fileName)
         {
@@ -48,17 +48,19 @@ namespace BoerseDataConvert
             writer.WriteStartElement("table");
             writer.WriteAttributeString("name", null, cur_fileName);
         }
-        public void WriteXmlRecord (Record record)
+        public void WriteXmlRecord(Record record)
         {
             writer.WriteStartElement("record");
             writer.WriteAttributeString("id", null, count.ToString());
             foreach (var tagValue in record)
             {
-                    string tag = CheckTagValue(tagValue.Key, tagValue.Value);
+                string tag = CheckTagValue(tagValue.Key, tagValue.Value);
+                if (tag != null)
+                {
                     writer.WriteStartElement(tag);
                     writer.WriteValue(tagValue.Value);
                     writer.WriteEndElement();
-
+                }
             }
             writer.WriteEndElement();
             count++;
@@ -72,7 +74,11 @@ namespace BoerseDataConvert
         }
         private string CheckTagValue(int tag, string value)
         {
-            if (tagsTable.CheckInvalidTag(tag)) warning.Add(tag);
+            if (tagsTable.CheckInvalidTag(tag))
+            {
+                warning.Add(tag);
+                return null;
+            }
             string tagname = tagsTable.GetTagName(tag);
             if (value == "") return tagname;
             if (value != "NULL" && !tagsTable.HaveValueRanges(tag)) //Checks if the tag have not a value ranges
@@ -82,6 +88,7 @@ namespace BoerseDataConvert
                     if (tagsTable.CheckStringLengthToBig(tag, value.Length))
                     {
                         Console.WriteLine($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
+                        return null;
                     }
                 }
                 else//Checks if value type is decimal
@@ -93,7 +100,8 @@ namespace BoerseDataConvert
                     }
                     catch (FormatException)
                     {
-                         Console.WriteLine($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");   
+                        Console.WriteLine($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                        return null;
                     }
                 }
             }
@@ -102,6 +110,7 @@ namespace BoerseDataConvert
                 if (!tagsTable.CheckValidValue(tag, value))
                 {
                     Console.WriteLine($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                    return null;
                 }
             }
             return tagname;
