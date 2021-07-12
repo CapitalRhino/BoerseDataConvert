@@ -30,16 +30,16 @@ namespace BoerseDataConvert
         {
             if (tableWarnings.Count == 0)
             {
-                Console.WriteLine($"There is no warnings in file {curFile}");
+                Console.WriteLine($"INFO: No warnings in {curFile}");
             }
             else
             {
-                Console.WriteLine($"Warnings in file {curFile}");
+                Console.WriteLine($"INFO: Warnings in {curFile}");
                 foreach (var warning in tableWarnings)
                 {
                     int tag = warning.Key;
                     int count = warning.Value;
-                    Console.WriteLine($"Invalid tag \"{tag}\": {count} times.");
+                    Console.WriteLine($"INFO: Invalid tag \"{tag}\": {count} times.");
                 }
             }
         }

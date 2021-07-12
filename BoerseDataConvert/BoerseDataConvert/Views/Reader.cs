@@ -26,21 +26,21 @@ namespace BoerseDataConvert
             string s = reader.ReadLine();
             if (s.Substring(0, 11) == "Datensaetze")
             {
-                Console.WriteLine($"File{ filesNames[fileInd]}.xml was converted successfully");
+                Console.WriteLine($"INFO: { filesNames[fileInd] } was converted successfully");
                 fileInd++;
-                EndFile();               
+                EndFile();
                 reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
                 s = reader.ReadLine();
                 s = reader.ReadLine();
             }
-            string[] sr = s.Split("|").ToArray(); 
+            string[] sr = s.Split("|").ToArray();
             Record record = new Record();
             foreach (var item in sr)
             {
-                string[] d = item.Split('#',2).ToArray();
-                record.Add(int.Parse(d[0]),  d[1]);
-            }           
+                string[] d = item.Split('#', 2).ToArray();
+                record.Add(int.Parse(d[0]), d[1]);
+            }
             return record;
         }
         internal static void EndFile()

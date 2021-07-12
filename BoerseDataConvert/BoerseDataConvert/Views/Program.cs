@@ -88,7 +88,7 @@ namespace BoerseDataConvert
                     break;
                 }
             }
-            Console.WriteLine("INFO: Success, exiting");
+            Console.WriteLine("INFO: Successful conversion, exiting");
             Environment.Exit(0);
         }
         static void CheckFreeDisk(string zipFile, string outputDirectory)

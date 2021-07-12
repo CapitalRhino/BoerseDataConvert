@@ -41,7 +41,7 @@ namespace BoerseDataConvert
             warning = new WarningStat(fileName);
             cur_fileName = fileName.Split('.').First();
             count = 1;
-            Console.WriteLine(cur_fileName + " start");
+            Console.WriteLine($"INFO: Converting {cur_fileName}");
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.CheckCharacters = false;
@@ -89,7 +89,7 @@ namespace BoerseDataConvert
                 {
                     if (tagsTable.CheckStringLengthToBig(tag, value.Length))
                     {
-                        Console.WriteLine($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
+                        Console.Error.WriteLine($"WARN: Too long value \"{tag}\", \"{value}\", max allowed \"{tagsTable.GetTagName(tag)}\", {cur_fileName} line {count + 1}");
                         return null;
                     }
                 }
@@ -102,7 +102,7 @@ namespace BoerseDataConvert
                     }
                     catch (FormatException)
                     {
-                        Console.WriteLine($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                        Console.Error.WriteLine($"WARN: Value is not in a valid format for number \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                         return null;
                     }
                 }
@@ -111,7 +111,7 @@ namespace BoerseDataConvert
             {
                 if (!tagsTable.CheckValidValue(tag, value))
                 {
-                    Console.WriteLine($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
+                    Console.Error.WriteLine($"WARN: Value not in range \"{tag}\", \"{value}\", {cur_fileName} line {count + 1}");
                     return null;
                 }
             }
