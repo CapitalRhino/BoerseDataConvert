@@ -27,6 +27,7 @@ namespace BoerseDataConvert
             if (input.Length == 3)
             {
                 valueRanges = input[2].Split('#').ToArray();
+                haveValueRanges = true;
             }
             else haveValueRanges = false;
         }
@@ -48,7 +49,7 @@ namespace BoerseDataConvert
         }
         public bool ValidValue(string value)
         {
-            foreach (string validValue  in valueRanges)
+            foreach (string validValue in valueRanges)
             {
                 if (validValue == value)
                 {
