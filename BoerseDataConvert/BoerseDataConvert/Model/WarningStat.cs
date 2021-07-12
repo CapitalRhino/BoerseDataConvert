@@ -6,22 +6,16 @@ using System.Threading.Tasks;
 
 namespace BoerseDataConvert
 {
-    public static class WarningStat
+    public  class WarningStat
     {
-        private static Dictionary<int, int> tableWarnings = tableWarnings = new Dictionary<int, int>();
-        private static string curFile;
-        public static void Refresh(string fileName)
+        private Dictionary<int, int> tableWarnings;
+        private  string curFile;
+        public WarningStat(string fileName)
         {
             curFile = fileName;
             tableWarnings = new Dictionary<int, int>();
         }
-        /*
-         type "inv" - Ivalid tag
-         type "long" - too long string value
-         type "notnum" - is not in a valid format for number
-         type "range" - Value not in range 
-        */
-        public static void Add(int tag)//
+        public  void Add(int tag)
         {
             if (tableWarnings.ContainsKey(tag))
             {
@@ -32,7 +26,7 @@ namespace BoerseDataConvert
                 tableWarnings.Add(tag, 1);
             }
         }
-        public static void PrintWarnigs()
+        public  void PrintWarnigs()
         {
             if (tableWarnings.Count == 0)
             {

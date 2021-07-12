@@ -15,6 +15,7 @@ namespace BoerseDataConvert
         private TagsTable tagsTable;
         private static string address;
         private static XmlWriter writer;
+        private static WarningStat warning;
         public RecordController(string adr,string fileName, string tags)
         {
             count = 1;
@@ -28,15 +29,15 @@ namespace BoerseDataConvert
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
             writer.WriteAttributeString("name", null, cur_fileName);
-            WarningStat.Refresh(fileName);
+            warning= new WarningStat(fileName);
         }
         public static void NextFile(string fileName)
         {
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
-            WarningStat.PrintWarnigs();
-            WarningStat.Refresh(fileName);
+            warning.PrintWarnigs();
+            warning = new WarningStat(fileName);
             cur_fileName = fileName.Split('.').First();
             count = 1;
             Console.WriteLine(cur_fileName + " start");
@@ -67,11 +68,11 @@ namespace BoerseDataConvert
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
-            WarningStat.PrintWarnigs();
+            warning.PrintWarnigs();
         }
         private string CheckTagValue(int tag, string value)
         {
-            if (tagsTable.CheckInvalidTag(tag)) WarningStat.Add(tag);
+            if (tagsTable.CheckInvalidTag(tag)) warning.Add(tag);
             string tagname = tagsTable.GetTagName(tag);
             if (value == "") return tagname;
             if (value != "NULL" && !tagsTable.HaveValueRanges(tag)) //Checks if the tag have not a value ranges
