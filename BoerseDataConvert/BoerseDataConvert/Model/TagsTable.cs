@@ -24,7 +24,7 @@ namespace BoerseDataConvert
                 while (!reader.EndOfStream)
                 {
                     string[] line = reader.ReadLine().Split('|').ToArray();
-                    table[int.Parse(line[0])]= new Tag(line);
+                    table[int.Parse(line[0])]= new Tag(line.Skip(1).ToArray());
                 }
             }
         }
