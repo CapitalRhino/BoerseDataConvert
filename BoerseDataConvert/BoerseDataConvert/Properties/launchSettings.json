@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BoerseDataConvert": {
+      "commandName": "Project",
+      "commandLineArgs": "-i TestData-2021_07_02.zip -d input -o output -t \"D:\\Code\\ИТ Кариера\\Стаж\\github\\BoerseDataConvert\\tags.txt\""
+    }
+  }
+}

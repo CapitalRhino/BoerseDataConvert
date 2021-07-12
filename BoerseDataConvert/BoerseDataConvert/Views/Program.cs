@@ -38,13 +38,13 @@ namespace BoerseDataConvert
 
             try
             {
-                CheckFreeDisk(outputDir);
+                CheckFreeDisk(zipFile, outputDir);
                 ZipExtract(zipFile, inputDir);
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.Message);
-                Environment.Exit(0);
+                Environment.Exit(Environment.ExitCode);
             }
 
             // only read filenames
@@ -82,17 +82,19 @@ namespace BoerseDataConvert
             Console.WriteLine("-h or --help - Prints this message");
             Environment.Exit(0);
         }
-        static void CheckFreeDisk(string outputDir)
+        static void CheckFreeDisk(string zipFile, string outputDir)
         {
             double gibibyte = 1073741824;
             DriveInfo driveInfo = new DriveInfo(Directory.GetDirectoryRoot(outputDir));
             double availableSpace = driveInfo.AvailableFreeSpace;
-            Console.WriteLine($"INFO: {availableSpace / gibibyte}GiB available");
-            if (availableSpace < 2147483648)
+            FileInfo fi = new FileInfo(zipFile);
+            double checkedSpace = fi.Length * 100;
+            if (availableSpace < checkedSpace)
             {
                 Environment.ExitCode = 3;
-                throw new IOException($"ERROR: Insufficient disk space, {availableSpace / gibibyte}GiB less than 2GiB");
+                throw new IOException($"ERROR: Estimated required space: {checkedSpace / gibibyte:f2}GiB. Available: {availableSpace / gibibyte:f2}GiB");
             }
+            Console.WriteLine($"INFO: {availableSpace / gibibyte:f2}GiB available");
         }
         static string[] InputValidate(string[] args)
         {
