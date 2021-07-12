@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Mono.Options;
 
 namespace BoerseDataConvert
 {
     class Program
     {
+        static string zipFile;
+        static string inputDirectory;
+        static string outputDirectory;
+        static string tagsFile;
+        static bool helpMessage;
         static void Main(string[] args)
         {
-            // Args format
-            // -i *.zip or --input *.zip
-            // -d directory or --dir directory
-            // -o directory or --output direcory
-            // -h - help
-            
+            /* 
             FileStream ostrm;
             StreamWriter writer1;
             TextWriter oldOut = Console.Out;
             try
             {
-                ostrm = new FileStream("./log.txt", FileMode.OpenOrCreate, FileAccess.Write);
+                ostrm = new FileStream($"./{DateTime.Now.ToString("dd-HH-mm-ss")}.txt", FileMode.OpenOrCreate, FileAccess.Write);
                 writer1 = new StreamWriter(ostrm);
             }
             catch (Exception e)
@@ -30,16 +31,36 @@ namespace BoerseDataConvert
                 return;
             }
             Console.SetOut(writer1);
-            
+            */
 
             // input handling
-            string[] input = InputValidate(args);
-            string zipFile = input[0], inputDir = input[1], outputDir = input[2], tags = input[3];
+            var p = new OptionSet() {
+                "BoerseDataConvert Version 1.0.0",
+                "---",
+                "Usage: BoerseDataConvert [OPTIONS]+",
+                "Tool which converts from Boerse Stuttart format to XML",
+                "",
+                "Flags:",
+                { "?|h|help", "prints help message", x => helpMessage = true },
+                { "i|input=", "specify input zip file", x => zipFile = x },
+                { "d|directory=", "specify input directory", x => inputDirectory = x },
+                { "o|output=", "specify output directory", x => outputDirectory = x },
+                { "t|tags=", "specify tag file", x => { if (x != "") tagsFile = x; } },
+                { "<>", v => throw new ArgumentException("ERROR: Invalid arguments") }, // default
+                "",
+                "Created by D. Delchev and D. Byalkov, 2021"
+            };
 
             try
             {
-                CheckFreeDisk(zipFile, outputDir);
-                ZipExtract(zipFile, inputDir);
+                p.Parse(args);
+                if (helpMessage)
+                {
+                    p.WriteOptionDescriptions(Console.Out);
+                    Environment.Exit(0);
+                }
+                CheckFreeDisk(zipFile, outputDirectory);
+                ZipExtract(zipFile, inputDirectory);
             }
             catch (Exception e)
             {
@@ -48,10 +69,10 @@ namespace BoerseDataConvert
             }
 
             // only read filenames
-            string[] fileNames = Directory.GetFiles(inputDir).Select(x => x.Split('\\', '/').Last()).ToArray();
+            string[] fileNames = Directory.GetFiles(inputDirectory).Select(x => x.Split('\\', '/').Last()).ToArray();
 
-            Reader reader = new Reader(inputDir, fileNames);
-            RecordController a = new RecordController(outputDir,fileNames[0], tags);
+            Reader reader = new Reader(inputDirectory, fileNames);
+            RecordController a = new RecordController(outputDirectory, fileNames[0], tagsFile);
 
             while (true)
             {
@@ -70,25 +91,14 @@ namespace BoerseDataConvert
             Console.WriteLine("INFO: Success, exiting");
             Environment.Exit(0);
         }
-        static void Help()
-        {
-            Console.WriteLine("BoerseDataConvert v1.0.0");
-            Console.WriteLine("D. Delchev and D. Byalkov, 2021");
-            Console.WriteLine("---");
-            Console.WriteLine("-i <input zip file> or --input <input zip file>");
-            Console.WriteLine("-d <working directory> or --directory <working directory>");
-            Console.WriteLine("-o <output directory> or --output <output directory>");
-            Console.WriteLine("-t <tags file> or --tags <tags file>");
-            Console.WriteLine("-h or --help - Prints this message");
-            Environment.Exit(0);
-        }
-        static void CheckFreeDisk(string zipFile, string outputDir)
+        static void CheckFreeDisk(string zipFile, string outputDirectory)
         {
             double gibibyte = 1073741824;
-            DriveInfo driveInfo = new DriveInfo(Directory.GetDirectoryRoot(outputDir));
+            DriveInfo driveInfo = new DriveInfo(Directory.GetDirectoryRoot(outputDirectory));
             double availableSpace = driveInfo.AvailableFreeSpace;
             FileInfo fi = new FileInfo(zipFile);
-            double checkedSpace = fi.Length * 100;
+            double checkedSpace = fi.Length * 100; // lazy but given the file sizes it's
+                                                   // better to overestimate than to under-.
             if (availableSpace < checkedSpace)
             {
                 Environment.ExitCode = 3;
@@ -96,72 +106,11 @@ namespace BoerseDataConvert
             }
             Console.WriteLine($"INFO: {availableSpace / gibibyte:f2}GiB available");
         }
-        static string[] InputValidate(string[] args)
+        static void ZipExtract(string zipFile, string inputDirectory)
         {
-            string[] output = new string[4];
-            // check input zipfile parameter
-            if (args.Contains("-i"))
-            {
-                output[0] = args[Array.IndexOf(args, "-i") + 1];
-            }
-            if (args.Contains("--input"))
-            {
-                output[0] = args[Array.IndexOf(args, "--input") + 1];
-            }
-            // check input directory parameter
-            if (args.Contains("-d"))
-            {
-                output[1] = args[Array.IndexOf(args, "-d") + 1];
-            }
-            if (args.Contains("--directory"))
-            {
-                output[1] = args[Array.IndexOf(args, "--directory") + 1];
-            }
-            // check output directory parameter
-            if (args.Contains("-o"))
-            {
-                output[2] = args[Array.IndexOf(args, "-o") + 1];
-            }
-            if (args.Contains("--output"))
-            {
-                output[2] = args[Array.IndexOf(args, "-output") + 1];
-            }
-            if (args.Contains("-t"))
-            {
-                output[3] = args[Array.IndexOf(args, "-t") + 1];
-            }
-            if (args.Contains("--tags"))
-            {
-                output[3] = args[Array.IndexOf(args, "--tags") + 1];
-            }
-            if (!args.Contains("-t") || !args.Contains("--tags"))
-            {
-                output[3] = "tags.txt";
-            }
-            // check help parameter
-            if (args.Contains("-h") || args.Contains("--help"))
-            {
-                Help();
-            }
-            // Checks if somehow the flags get in the output and if
-            // the output string are null. Prevents invalid paths.
-            if (output.Contains("-i") || output.Contains("--input") ||
-                output.Contains("-d") || output.Contains("--directory") ||
-                output.Contains("-o") || output.Contains("--output") ||
-                output.Contains("-h") || output.Contains("--help") || 
-                output[0] == null || output[1] == null || output[2] == null)
-            {
-                Environment.ExitCode = 1;
-                throw new ArgumentException("ERROR: Parameters cannot be empty");
-            }
-            // returns the strings
-            return output;
-        }
-        static void ZipExtract(string zipFile, string inputDir)
-        {
-            Directory.Delete(inputDir, true);
-            Directory.CreateDirectory(inputDir);
-            ZipFile.ExtractToDirectory(zipFile, inputDir, true); // zip extract
+            Directory.Delete(inputDirectory, true);
+            Directory.CreateDirectory(inputDirectory);
+            ZipFile.ExtractToDirectory(zipFile, inputDirectory, true); // zip extract
             Console.WriteLine("INFO: Successful ZIP extraction");
         }
     }
