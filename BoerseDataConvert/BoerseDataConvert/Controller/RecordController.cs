@@ -24,6 +24,7 @@ namespace BoerseDataConvert
             Directory.CreateDirectory(address);
             tagsTable = new TagsTable(tags);
             XmlWriterSettings settings = new XmlWriterSettings();
+            settings.CheckCharacters = false;
             settings.Indent = true;
             writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
             writer.WriteStartDocument();
@@ -43,6 +44,7 @@ namespace BoerseDataConvert
             Console.WriteLine(cur_fileName + " start");
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
+            settings.CheckCharacters = false;
             writer = XmlWriter.Create($@"{address}/{cur_fileName}.xml", settings);
             writer.WriteStartDocument();
             writer.WriteStartElement("table");
