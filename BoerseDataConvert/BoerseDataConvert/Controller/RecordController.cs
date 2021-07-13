@@ -16,6 +16,10 @@ namespace BoerseDataConvert
         private static string address;
         private static XmlWriter writer;
         private static WarningStat warning;
+        public static  int Count
+        {
+            get { return count; }
+        }
         public RecordController(string adr, string fileName, string tags)
         {
             count = 1;
