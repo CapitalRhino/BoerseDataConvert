@@ -34,12 +34,12 @@ namespace BoerseDataConvert
             }
             else
             {
-                Console.WriteLine($"INFO: Warnings in {curFile}");
+                Console.Error.WriteLine($"WARN: Warnings in {curFile}");
                 foreach (var warning in tableWarnings)
                 {
                     int tag = warning.Key;
                     int count = warning.Value;
-                    Console.WriteLine($"INFO: Invalid tag \"{tag}\": {count} times.");
+                    Console.Error.WriteLine($"WARN: Invalid tag \"{tag}\": {count} times.");
                 }
             }
         }

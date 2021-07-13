@@ -18,7 +18,7 @@ namespace BoerseDataConvert
         private static WarningStat warning;
         public static  int Count
         {
-            get { return count; }
+            get { return count - 1; }
         }
         public RecordController(string adr, string fileName, string tags)
         {

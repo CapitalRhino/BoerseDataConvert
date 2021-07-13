@@ -43,13 +43,19 @@ namespace BoerseDataConvert
                 "Flags:",
                 { "?|h|help", "prints help message", x => helpMessage = true },
                 { "i|input=", "specify input zip file", x => zipFile = x },
-                { "d|directory=", "specify input directory", x => inputDirectory = x },
+                { "d|directory=", "specify working directory", x => inputDirectory = x },
+                "The working directory is cleared recursively if it isn't empty!",
                 { "o|output=", "specify output directory", x => outputDirectory = x },
-                { "t|tags=", "specify tag file", x => { if (x != "") tagsFile = x; } },
+                { "t|tags=", "specify tag file", x =>  tagsFile = x },
                 { "<>", v => throw new ArgumentException("ERROR: Invalid arguments") }, // default
                 "",
                 "Created by D. Delchev and D. Byalkov, 2021"
             };
+
+            if (tagsFile == null)
+            {
+                tagsFile = "tags.txt";
+            }
 
             try
             {
@@ -65,7 +71,7 @@ namespace BoerseDataConvert
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.Message);
-                Environment.Exit(Environment.ExitCode);
+                Environment.Exit(3);
             }
 
             // only read filenames
@@ -108,7 +114,10 @@ namespace BoerseDataConvert
         }
         static void ZipExtract(string zipFile, string inputDirectory)
         {
-            Directory.Delete(inputDirectory, true);
+            if (Directory.Exists(inputDirectory))
+            {
+                Directory.Delete(inputDirectory, true);
+            }
             Directory.CreateDirectory(inputDirectory);
             ZipFile.ExtractToDirectory(zipFile, inputDirectory, true); // zip extract
             Console.WriteLine("INFO: Successful ZIP extraction");

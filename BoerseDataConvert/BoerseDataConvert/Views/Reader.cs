@@ -75,12 +75,12 @@ namespace BoerseDataConvert
                     count = int.Parse(countStr);
                     if (count != RecordController.Count)
                     {
-                        Console.WriteLine($"Count on file {filesNames[fileInd]} is not correct! Real count is {RecordController.Count}");
+                        Console.Error.WriteLine($"WARN: Count on file {filesNames[fileInd]} is not correct! Real count is {RecordController.Count}");
                     }
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"Count on file {filesNames[fileInd]} is not in the correct format");
+                    Console.Error.WriteLine($"WARN: Count on file {filesNames[fileInd]} is not in the correct format");
                 }
 
             }
