@@ -5,22 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace BoerseDataConvert
 {
     public class Reader
     {
-        private string[] filesNames;
+        static Stopwatch stopwatch = new Stopwatch();
+        private static string[] filesNames;
         private static StreamReader reader;
-        private int fileInd;
+        private static int fileInd;
         private string adr;
-        public Reader(string adr, string[] filesNames)
+        public Reader(string adr, string[] _filesNames)
         {
             fileInd = 0;
-            reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
+            reader = new StreamReader($@"{adr}/{_filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
             this.adr = adr;
-            this.filesNames = filesNames;
+            filesNames = _filesNames;
             string date = reader.ReadLine();
+            stopwatch.Start();
             CheckFirstLine(date);
         }
         public Record ReadLineRecord()
@@ -29,9 +32,9 @@ namespace BoerseDataConvert
             if (reader.EndOfStream)
             {
                 CheckFinalLine(s);
-                Console.WriteLine($"INFO: { filesNames[fileInd] } was converted successfully");
-                fileInd++;
                 EndFile();
+                fileInd++;
+                stopwatch.Start();
                 reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
                 RecordController.NextFile(filesNames[fileInd]);
                 string date = reader.ReadLine();
@@ -88,6 +91,9 @@ namespace BoerseDataConvert
         internal static void EndFile()
         {
             reader.Close();
+            stopwatch.Stop();
+            Console.WriteLine($"INFO: { filesNames[fileInd] } was converted successfully in {stopwatch.Elapsed:c}");
+            stopwatch.Reset();
         }
     }
 }

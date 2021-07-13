@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Mono.Options;
+using System.Diagnostics;
 
 namespace BoerseDataConvert
 {
@@ -79,7 +80,8 @@ namespace BoerseDataConvert
 
             Reader reader = new Reader(inputDirectory, fileNames);
             RecordController a = new RecordController(outputDirectory, fileNames[0], tagsFile);
-
+            Stopwatch totalRunTime = new Stopwatch();
+            totalRunTime.Start();
             while (true)
             {
                 try
@@ -89,12 +91,12 @@ namespace BoerseDataConvert
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Reader.EndFile();
                     RecordController.EndFile();
                     break;
                 }
             }
-            Console.WriteLine("INFO: Successful conversion, exiting");
+            totalRunTime.Stop();
+            Console.WriteLine($"INFO: Successful conversion in {totalRunTime.Elapsed:c}, exiting");
             Environment.Exit(0);
         }
         static void CheckFreeDisk(string zipFile, string outputDirectory)

@@ -2,7 +2,7 @@
   "profiles": {
     "BoerseDataConvert": {
       "commandName": "Project",
-      "commandLineArgs": "-i smalldata.zip -d input -o output"
+      "commandLineArgs": "-i bigdata.zip -d input -o output"
     }
   }
 }
