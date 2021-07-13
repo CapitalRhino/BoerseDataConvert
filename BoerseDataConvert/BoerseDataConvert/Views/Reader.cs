@@ -31,15 +31,7 @@ namespace BoerseDataConvert
             string s = reader.ReadLine();
             if (reader.EndOfStream)
             {
-                CheckFinalLine(s);
-                EndFile();
-                fileInd++;
-                stopwatch.Start();
-                reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
-                RecordController.NextFile(filesNames[fileInd]);
-                string date = reader.ReadLine();
-                CheckFirstLine(date);
-                s = reader.ReadLine();
+                s = NextFile(s);
             }
             string[] sr = s.Split("|").ToArray();
             Record record = new Record();
@@ -49,6 +41,19 @@ namespace BoerseDataConvert
                 record.Add(int.Parse(d[0]), d[1]);
             }
             return record;
+        }
+        private string NextFile(string s)
+        {
+            CheckFinalLine(s);
+            EndFile();
+            fileInd++;
+            stopwatch.Start();
+            reader = new StreamReader($@"{adr}/{filesNames[fileInd]}", CodePagesEncodingProvider.Instance.GetEncoding(1252));
+            RecordController.NextFile(filesNames[fileInd]);
+            string date = reader.ReadLine();
+            CheckFirstLine(date);
+            s = reader.ReadLine();
+            return s;
         }
         private void CheckFirstLine(string date)
         {
