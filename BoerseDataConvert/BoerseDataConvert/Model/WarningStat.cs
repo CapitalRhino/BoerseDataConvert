@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BoerseDataConvert
 {
+    /// <summary>
+    /// This class strores information about a invalid tags in a file
+    /// </summary>
     public  class WarningStat
     {
         private Dictionary<int, int> tableWarnings;
@@ -15,7 +18,11 @@ namespace BoerseDataConvert
             curFile = fileName;
             tableWarnings = new Dictionary<int, int>();
         }
-        public  void Add(int tag)
+        /// <summary>
+        /// It increases count of encounters if the invalid tag or it sets it to 1 if the tag is new
+        /// </summary>
+        /// <param name="tag">Invalid tag in numerical form</param>
+        public void Add(int tag)
         {
             if (tableWarnings.ContainsKey(tag))
             {
@@ -26,6 +33,9 @@ namespace BoerseDataConvert
                 tableWarnings.Add(tag, 1);
             }
         }
+        /// <summary>
+        /// It prints the count of encounters of every invalid tag in the file
+        /// </summary>
         public  void PrintWarnigs()
         {
             if (tableWarnings.Count == 0)

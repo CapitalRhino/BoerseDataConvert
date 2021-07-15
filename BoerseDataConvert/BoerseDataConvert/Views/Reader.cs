@@ -16,6 +16,11 @@ namespace BoerseDataConvert
         private static StreamReader reader;
         private static int fileInd;
         private string adr;
+        /// <summary>
+        /// it create a reader for first file, start the StopWatch and Checks the first line from the current file
+        /// </summary>
+        /// <param name="adr">input directoty</param>
+        /// <param name="_filesNames">array with the names of the every TXT file</param>
         public Reader(string adr, string[] _filesNames)
         {
             fileInd = 0;
@@ -26,6 +31,11 @@ namespace BoerseDataConvert
             stopwatch.Start();
             CheckFirstLine(date);
         }
+        /// <summary>
+        /// It reads a line from the current file and return a Record with this information
+        /// and it goes to next file if it the current file ends
+        /// </summary>
+        /// <returns>Record with information from 1 line from current file</returns>
         public Record ReadLineRecord()
         {
             string s = reader.ReadLine();
@@ -42,6 +52,12 @@ namespace BoerseDataConvert
             }
             return record;
         }
+        /// <summary>
+        /// it checks the last line from the current file, closes the reader, create a new reader for he file
+        /// also it check first line from the next file and synchronizes a current file in RecordController with its current file
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         private string NextFile(string s)
         {
             CheckFinalLine(s);
@@ -55,6 +71,10 @@ namespace BoerseDataConvert
             s = reader.ReadLine();
             return s;
         }
+        /// <summary>
+        /// it checks if string date is in the correct format
+        /// </summary>
+        /// <param name="date">first line from a file</param>
         private void CheckFirstLine(string date)
         {
             try
@@ -68,6 +88,10 @@ namespace BoerseDataConvert
                 Console.WriteLine($"WARN: Invalid date in file {filesNames[fileInd]}");
             }
         }
+        /// <summary>
+        /// Checks if string s is in the correct format
+        /// </summary>
+        /// <param name="s">last line from a file</param>
         private void CheckFinalLine(string s)
         {
             if ("Datensaetze: " != s.Substring(0, 13))
@@ -93,6 +117,9 @@ namespace BoerseDataConvert
 
             }
         }
+        /// <summary>
+        /// Closes the reader, stops the stopwatch,print the its time, resets it and start it again
+        /// </summary>
         internal static void EndFile()
         {
             reader.Close();

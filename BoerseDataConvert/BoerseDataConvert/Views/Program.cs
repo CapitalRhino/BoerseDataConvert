@@ -15,6 +15,7 @@ namespace BoerseDataConvert
         static string outputDirectory;
         static string tagsFile;
         static bool helpMessage;
+        static bool fastCheck;
         static void Main(string[] args)
         {
             /* 
@@ -48,6 +49,7 @@ namespace BoerseDataConvert
                 "The working directory is cleared recursively if it isn't empty!",
                 { "o|output=", "specify output directory", x => outputDirectory = x },
                 { "t|tags=", "specify tag file", x =>  tagsFile = x },
+                { "f|fast|fastcheck=", "specify tag file", x =>  fastCheck = true },
                 { "<>", v => throw new ArgumentException("ERROR: Invalid arguments") }, // default
                 "",
                 "Created by D. Delchev and D. Byalkov, 2021"
@@ -87,7 +89,7 @@ namespace BoerseDataConvert
                 try
                 {
                     Record record = reader.ReadLineRecord();
-                    a.WriteXmlRecord(record);
+                    a.WriteXmlRecord(record,fastCheck);
                 }
                 catch (IndexOutOfRangeException)
                 {

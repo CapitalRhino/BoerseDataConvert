@@ -20,6 +20,12 @@ namespace BoerseDataConvert
         {
             get { return count - 1; }
         }
+        /// <summary>
+        /// It create XML writer,xml file, writes the first line in it
+        /// </summary>
+        /// <param name="adr">output directoty</param>
+        /// <param name="fileName">currnt file name</param>
+        /// <param name="tags">Locataion of tags,txt</param>
         public RecordController(string adr, string fileName, string tags)
         {
             count = 1;
@@ -36,6 +42,11 @@ namespace BoerseDataConvert
             writer.WriteAttributeString("name", null, cur_fileName);
             warning = new WarningStat(fileName);
         }
+        /// <summary>
+        /// It writes the last line, closes the flie, and XMLwriter
+        /// and It creates new XML writer,new xml file, writes the first line in it
+        /// </summary>
+        /// <param name="fileName">name of the next file</param>
         public static void NextFile(string fileName)
         {
             writer.WriteEndElement();
@@ -54,13 +65,27 @@ namespace BoerseDataConvert
             writer.WriteStartElement("table");
             writer.WriteAttributeString("name", null, cur_fileName);
         }
-        public void WriteXmlRecord(Record record)
+        /// <summary>
+        /// It write the information in the record into the XML file
+        /// </summary>
+        /// <param name="record">Record that stores information about one record from the files</param>
+        /// <param name="fastCheck">if true it makes a fastChech</param>
+        public void WriteXmlRecord(Record record,bool fastCheck)
         {
             writer.WriteStartElement("record");
             writer.WriteAttributeString("id", null, count.ToString());
             foreach (var tagValue in record)
             {
-                string tag = CheckTagValue(tagValue.Key, tagValue.Value);
+                string tag = "";
+                if (fastCheck)
+                {
+                    tag = FastChechTag(tagValue.Key);
+                }
+                else 
+                {  
+                    tag = FullCheckTagValue(tagValue.Key, tagValue.Value);
+                }
+                
                 if (tag != null)
                 {
                     writer.WriteStartElement(tag);
@@ -78,7 +103,30 @@ namespace BoerseDataConvert
             writer.Close();
             warning.PrintWarnigs();
         }
-        private string CheckTagValue(int tag, string value)
+        /// <summary>
+        /// It checks only if the tag is valid
+        /// </summary>
+        /// <param name="tag">tag in the numeric form</param>
+        /// <returns>return name of the tag</returns>
+        private string FastChechTag(int tag)
+        {
+            if (tagsTable.CheckInvalidTag(tag))
+            {
+                warning.Add(tag);
+                return null;
+            }
+            else
+            {
+                return tagsTable.GetTagName(tag);
+            }
+        }
+        /// <summary>
+        /// It make a full check on the value
+        /// </summary>
+        /// <param name="tag">tag in the numeric form</param>
+        /// <param name="value"></param>
+        /// <returns>return name of the tag</returns>
+        private string FullCheckTagValue(int tag, string value)
         {
             if (tagsTable.CheckInvalidTag(tag))
             {
